@@ -17,20 +17,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     FlutterBoost.singleton.registerPageBuilders({
+      'embeded': (pageName, params, _)=>EmbededFirstRouteWidget(),
       'first': (pageName, params, _) => FirstRouteWidget(),
       'second': (pageName, params, _) => SecondRouteWidget(),
       'tab': (pageName, params, _) => TabRouteWidget(),
+      'platformView': (pageName, params, _) => PlatformRouteWidget(),
       'flutterFragment': (pageName, params, _) => FragmentRouteWidget(params),
-
       ///可以在native层通过 getContainerParams 来传递参数
       'flutterPage': (pageName, params, _) {
         print("flutterPage params:$params");
 
-        return FlutterRouteWidget();
+        return FlutterRouteWidget(params:params);
       },
     });
-
-    FlutterBoost.handleOnStartPage();
+    FlutterBoost.singleton.addBoostNavigatorObserver(TestBoostNavigatorObserver());
   }
 
   @override
@@ -38,34 +38,31 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         title: 'Flutter Boost example',
         builder: FlutterBoost.init(postPush: _onRoutePushed),
-        home: Container());
+        home: Container(
+            color:Colors.white
+        ));
   }
 
   void _onRoutePushed(
       String pageName, String uniqueId, Map params, Route route, Future _) {
-//    List<OverlayEntry> newEntries = route.overlayEntries
-//        .map((OverlayEntry entry) => OverlayEntry(
-//            builder: (BuildContext context) {
-//              final pageWidget = entry.builder(context);
-//              return Stack(
-//                children: <Widget>[
-//                  pageWidget,
-//                  Positioned(
-//                    child: Text(
-//                      "pageName:$pageName\npageWidget:${pageWidget.toStringShort()}",
-//                      style: TextStyle(fontSize: 12.0, color: Colors.red),
-//                    ),
-//                    left: 8.0,
-//                    top: 8.0,
-//                  )
-//                ],
-//              );
-//            },
-//            opaque: entry.opaque,
-//            maintainState: entry.maintainState))
-//        .toList(growable: true);
-//
-//    route.overlayEntries.clear();
-//    route.overlayEntries.addAll(newEntries);
   }
 }
+class TestBoostNavigatorObserver extends NavigatorObserver{
+  void didPush(Route<dynamic> route, Route<dynamic> previousRoute) {
+
+    print("flutterboost#didPush");
+  }
+
+  void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
+    print("flutterboost#didPop");
+  }
+
+  void didRemove(Route<dynamic> route, Route<dynamic> previousRoute) {
+    print("flutterboost#didRemove");
+  }
+
+  void didReplace({Route<dynamic> newRoute, Route<dynamic> oldRoute}) {
+    print("flutterboost#didReplace");
+  }
+}
+
